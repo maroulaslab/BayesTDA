@@ -107,8 +107,10 @@ points(circle.samp[,1],circle.samp[,2],pch = 20, col = 'blue')
 
 ## next we compute the posterior over a grid
 intens = apply (grid,1,postIntensityPoisson,dy,alpha,inf.weight,inf.mean,inf.noise,sy,unex.weight,unex.mean,unex.noise)
-post.df = data.frame(Birth = grid[,1],Persistence = grid[,2], Intensity = intens)
-
+max_intens.inf = max(intens)
+normalized_intens.inf = intens/max_intens.inf
+post.df = data.frame(Birth = grid[,1],Persistence = grid[,2], Intensity = normalized_intens.inf)
+ 
 ##plot the posterior intensity. 
 g.post = ggplot(data = post.df, aes(x = Birth, y = Persistence)) + geom_tile(aes(fill=Intensity)) + coord_equal()
 g.post = g.post + geom_point(data = circle.df, aes(x = Birth, y= Persistence), pch = 19, cex=3, color = "Green")
