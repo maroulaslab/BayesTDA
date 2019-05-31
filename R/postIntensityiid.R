@@ -118,17 +118,17 @@ postIntensityiid = function(x,Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.
     
     
   first_term = (1-alpha)*Wedge_Gaussian_Mixture(x,weight.prior,mean.prior,sigma.prior)*
-    Gamma(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,1)*
-    (1/Gamma(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,0))
+    gammaiid(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,1)*
+    (1/gammaiid(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,0))
   qy = lapply(Dy,function(y){mapply(function(mu,sig1,sig2){dmvnorm(y,mean=mu,
                                                                    sigma=(sig1+sig2)*diag(2))},mean.prior,sigma.prior,MoreArgs = list(sig2 = sigma.y))}) 
   K = length(Dy) 
   prob.unexpected = 1/Nmax
-  g = Gamma(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,0)
+  g = gammaiid(Dy,alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,0)
   to_sum = matrix(0,nrow = K,length(weight.prior)) 
   for(j in 1:K){
     for(i in 1:length(weight.prior)){
-      to_sum[j,i]=Gamma(Dy[-j],alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,1)*
+      to_sum[j,i]=gammaiid(Dy[-j],alpha,prob.prior,weight.prior,mean.prior,sigma.prior,sigma.y,weights.unexpected,mean.unexpected,sigma.unexpected,Nmax,1)*
         alpha*qy[[j]][i]*weight.prior[i]*(1/Wedge_Gaussian_Mixture(Dy[[j]],weights = weights.unexpected,means = mean.unexpected,sigmas = sigma.unexpected))*
         (1/g)*
         dmvnorm(x,mean = (sigma.prior[i]*Dy[[j]]+sigma.y*mean.prior[[i]])/(sigma.prior[[i]]+sigma.y),
